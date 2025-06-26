@@ -45,6 +45,11 @@ A workout tracking application with dual purposes:
 - A Set contains one or more Moves
 - Each Move contains one or more Reps
 - A Move is an arbitrary name and a weight
+- 
+### flow 
+The ui should allow the user to specify a new set by naming a move. buttons are not used so specify a new move, instad any alpha input triggers the shift to a new move.
+once a move is started, a new line changes to a new set and a space followed by a numeric indicates a new rep.
+This is profoundly different than most ui/ux. the workout data below indicates the sequence of characters and button pushes for a single workout
 
 ### Example Workout Data
 
@@ -84,6 +89,52 @@ end workout
 
 workouts, Moves, Sets all get their own timestamps. 
 
+## User Interaction Flow
+
+| User Action | State |
+|-------------|-------|
+| Enter move name and weight (e.g., "Bench Press 135") | Workout starts, move recorded, set begins |
+| Press Enter after move input | Input switches to rep entry mode |
+| Enter reps separated by commas (e.g., "12, 10, 8") | Reps are recorded for current set |
+| Press Enter after rep input | Set ends, input switches back to move mode |
+| Enter new move name and weight | New move and set begin |
+| Continue entering moves and reps | Workout builds up with multiple sets |
+| End workout (future feature) | Workout ends, data saved |
+
+## State Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle: App starts
+    
+    Idle --> MoveInput: User types move name
+    MoveInput --> MoveInput: Continue typing
+    MoveInput --> RepInput: Press Enter
+    
+    RepInput --> RepInput: Continue typing reps
+    RepInput --> MoveInput: Press Enter
+    
+    MoveInput --> Idle: End workout
+    RepInput --> Idle: End workout
+    
+    note right of Idle
+        Waiting for input
+        Placeholder: "Enter move and weight"
+    end note
+    
+    note right of MoveInput
+        Recording move name & weight
+        Placeholder: "Enter move and weight"
+        Workout start time recorded
+        Set start time recorded
+    end note
+    
+    note right of RepInput
+        Recording reps for current set
+        Placeholder: "Enter reps (e.g., 12, 10, 8)"
+        Reps separated by commas
+    end note
+```
 
 ## Setup
 

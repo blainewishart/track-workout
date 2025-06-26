@@ -6,6 +6,9 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+# import github
 
 class Rep(BaseModel):
     count: int
@@ -35,9 +38,18 @@ def serve_mockup():
     mockup_path = Path("static/mockup.html")
     return HTMLResponse(mockup_path.read_text())
 
+def serve_state_diagram():
+    """Serve the state diagram HTML file"""
+    diagram_path = Path("static/state-diagram.html")
+    return HTMLResponse(diagram_path.read_text())
+
 @app.get("/")
 async def root():
     return serve_mockup()
+
+@app.get("/diagram")
+async def diagram():
+    return serve_state_diagram()
 
 @app.post("/api/move")
 async def add_move(move: Move):
@@ -50,4 +62,4 @@ async def get_workout():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True) 
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True) 
